@@ -24,6 +24,9 @@ namespace lea
     game(const char* configuration_file);
     bool run();
 
+    void update_server(std::uint32_t frame_id);
+    void update_client(double delta);
+
     private:
     interpreter             script_manager_;
     std::filesystem::path   configuration_path_;

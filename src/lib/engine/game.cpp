@@ -9,6 +9,7 @@
 //==================================================================================================
 #include <lea/engine/game.hpp>
 #include <lea/system/directory.hpp>
+#include <lea/math/random.hpp>
 #include <lea/3rd_party/sol.hpp>
 #include <SFML/Window/Event.hpp>
 #include <SFML/System/Clock.hpp>
@@ -27,13 +28,23 @@ namespace lea
                 )
       , time_delta_(1. / display_.settings().frame_rate )
   {
+    // Setup the PRNG : seed and register with the interpreter
+    random::setup( script_manager_ );
+  }
+
+  void game::update_server(std::uint32_t frame_id)
+  {
+    // Update all server things: AI, game logic, ...
+  }
+
+  void game::update_client(double delta)
+  {
+    // Update all client things: display, music, etc...
   }
 
   bool game::run()
   {
     sf::Event event;
-    sf::Clock clock;
-
     std::uint32_t frame_id = 0;
 
     while(display_.is_open())
@@ -52,8 +63,8 @@ namespace lea
 
       frame_id++;
 
-      // update_server(frame_id);
-      // update_client(time_delta_);
+      update_server(frame_id);
+      update_client(time_delta_);
 
 //      display_.clear();
 //      current_screen_->render(display_);
