@@ -9,23 +9,16 @@
 //==================================================================================================
 #pragma once
 
+#include <lea/3rd_party/sol.hpp>
 #include <lea/api.hpp>
-#include <lea/engine/interpreter.hpp>
-#include <SFML/Graphics/RenderWindow.hpp>
-#include <memory>
 
 namespace lea
 {
-  struct scene;
-
-  struct LEA_API game
+  struct LEA_API interpreter
   {
-    game();
-    bool run();
+    interpreter();
 
     private:
-    interpreter             script_manager_;
-    sf::RenderWindow        window_;
-    scene*                  current_scene_;
+    sol::state                    state_;
   };
 }

@@ -8,6 +8,7 @@
 **/
 //==================================================================================================
 #include <lea/engine/game.hpp>
+#include <lea/3rd_party/sol.hpp>
 #include <SFML/Window/Event.hpp>
 #include <SFML/System/Clock.hpp>
 

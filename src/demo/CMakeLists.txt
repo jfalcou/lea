@@ -19,3 +19,4 @@ target_include_directories( sandbox
                           )
 
 target_link_libraries(sandbox lea)
+target_compile_features( sandbox PRIVATE cxx_std_20  )
