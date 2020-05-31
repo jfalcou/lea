@@ -7,18 +7,10 @@
   SPDX-License-Identifier: MIT
 **/
 //==================================================================================================
-#include <lea/engine/interpreter.hpp>
+#include <lea/engine/game.hpp>
 
-namespace lea
+int main()
 {
-  interpreter::interpreter()
-  {
-    state_.open_libraries(sol::lib::base,sol::lib::io,sol::lib::table,sol::lib::string,sol::lib::math);
-    state_.script("print('[LEA] LUA engine successfully started.')");
-  }
-
-  void interpreter::run(char const* filename)
-  {
-    state_.script_file( filename );
-  }
+  lea::game g("src/demo/sandbox/res/config.lua");
+  g.run();
 }

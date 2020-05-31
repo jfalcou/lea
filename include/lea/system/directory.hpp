@@ -7,10 +7,13 @@
   SPDX-License-Identifier: MIT
 **/
 //==================================================================================================
-#include <lea/engine/game.hpp>
+#pragma once
 
-int main()
+#include <lea/api.hpp>
+#include <filesystem>
+
+namespace lea
 {
-  lea::game g;
-  g.run();
+  LEA_API std::filesystem::path get_current_directory();
+  LEA_API std::filesystem::path get_config(const char* filename);
 }

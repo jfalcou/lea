@@ -8,21 +8,25 @@
 **/
 //==================================================================================================
 #include <lea/engine/game.hpp>
+#include <lea/system/directory.hpp>
 #include <lea/3rd_party/sol.hpp>
 #include <SFML/Window/Event.hpp>
 #include <SFML/System/Clock.hpp>
+#include <unistd.h>
 
 namespace lea
 {
-  game::game()
+  game::game(const char* configuration_file)
+      : configuration_path_(get_config(configuration_file))
+      , display_ ( [&]()
+                  {
+                    script_manager_.run(configuration_path_.c_str());
+                    sol::table that = script_manager_["settings"];
+                    return that;
+                  }()
+                )
+      , time_delta_(1. / display_.settings().frame_rate )
   {
-    window_.create( sf::VideoMode(640,480)
-                  , "This is the basic game window"
-                  , sf::Style::Titlebar | sf::Style::Close
-                  );
-
-    window_.setPosition( sf::Vector2i(100, 100) );
-    window_.setFramerateLimit(120);
   }
 
   bool game::run()
@@ -32,19 +36,15 @@ namespace lea
 
     std::uint32_t frame_id = 0;
 
-    while(window_.isOpen())
+    while(display_.is_open())
     {
-      sf::Time time = clock.restart();
-      double elapsed = 1e-6 * time.asMicroseconds();
-//      accumulated_time_ += elapsed;
-
-      while(window_.pollEvent(event))
+      while(display_.poll(event/*,current_scene_*/))
       {
   //      if(!current_screen_->process(event))
         {
           switch(event.type)
           {
-            case sf::Event::Closed: window_.close(); break;
+            case sf::Event::Closed: display_.close(); break;
             default: break;
           }
         }
@@ -55,9 +55,9 @@ namespace lea
       // update_server(frame_id);
       // update_client(time_delta_);
 
-      window_.clear();
-//      current_screen_->render(window_);
-      window_.display();
+//      display_.clear();
+//      current_screen_->render(display_);
+      display_.show(/*current_scene_*/);
     }
 
     return true;

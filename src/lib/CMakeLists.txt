@@ -11,6 +11,11 @@ add_library ( lea SHARED
               ##====================================================================================
               engine/game.cpp
               engine/interpreter.cpp
+              ##====================================================================================
+              ## System interoperability
+              ##====================================================================================
+              system/directory.cpp
+              system/window.cpp
             )
 
 add_library(lea::lea ALIAS lea)

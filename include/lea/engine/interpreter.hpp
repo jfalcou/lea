@@ -17,6 +17,10 @@ namespace lea
   struct LEA_API interpreter
   {
     interpreter();
+    void run(char const*);
+
+    decltype(auto)  operator[](char const* id)  const { return state_[id]; }
+    decltype(auto)  operator[](char const* id)        { return state_[id]; }
 
     private:
     sol::state                    state_;

@@ -9,7 +9,7 @@
 ##==================================================================================================
 ## Setup Demos
 ##==================================================================================================
-add_executable(sandbox sandbox.cpp)
+add_executable(sandbox sandbox/sandbox.cpp)
 
 target_include_directories( sandbox
                             PRIVATE

@@ -10,25 +10,31 @@
 #pragma once
 
 #include <lea/api.hpp>
-#include <lea/engine/interpreter.hpp>
-#include <lea/system/window.hpp>
+#include <lea/3rd_party/sol.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
-#include <filesystem>
+#include <SFML/Window/Event.hpp>
 
 namespace lea
 {
-  struct scene;
-
-  struct LEA_API game
+  struct LEA_API window
   {
-    game(const char* configuration_file);
-    bool run();
+    window(sol::table const& config);
+
+    bool is_open() const;
+    bool poll(sf::Event&);
+    void show();
+    void close();
+
+    auto const& settings() const { return settings_; }
 
     private:
-    interpreter             script_manager_;
-    std::filesystem::path   configuration_path_;
-    window                  display_;
-    scene*                  current_scene_;
-    double                  time_delta_;
+    sf::RenderWindow        window_;
+
+    struct
+    {
+      int width, height;
+      int frame_rate;
+      bool fullscreen;
+    } settings_;
   };
 }
