@@ -11,6 +11,12 @@ add_library ( lea SHARED
               ##====================================================================================
               engine/game.cpp
               engine/interpreter.cpp
+              engine/scene.cpp
+              engine/drawable.cpp
+              ##====================================================================================
+              ## General game engine - Drawing primitive
+              ##====================================================================================
+              engine/primitive/quad.cpp
               ##====================================================================================
               ## System interoperability
               ##====================================================================================
@@ -40,7 +46,7 @@ target_include_directories( lea
                                 ${LUA_INCLUDE_DIR}
                           )
 
-find_package(Lua  5.3 EXACT REQUIRED  )
+find_package(Lua  5.4 EXACT REQUIRED  )
 find_package(SFML 2.5 COMPONENTS system window graphics network audio REQUIRED)
 set(LEA_LIBRARIES sfml-system sfml-window sfml-graphics sfml-audio sfml-network ${LUA_LIBRARIES})
 

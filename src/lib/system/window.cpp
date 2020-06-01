@@ -7,6 +7,7 @@
   SPDX-License-Identifier: MIT
 **/
 //==================================================================================================
+#include <lea/engine/scene.hpp>
 #include <lea/system/window.hpp>
 
 namespace lea
@@ -33,7 +34,7 @@ namespace lea
     }
     else
     {
-      window_.create( sf::VideoMode ( settings_.width,settings_.height)
+      window_.create( sf::VideoMode ( settings_.width, settings_.height )
                     , title
                     , sf::Style::Titlebar | sf::Style::Close
                     );
@@ -44,6 +45,13 @@ namespace lea
     auto x  = configuration["position"]["x"].get<int>();
     auto y  = configuration["position"]["y"].get<int>();
     window_.setPosition( sf::Vector2i(x, y) );
+
+    // Initialize rendering texture
+    target_.create(settings_.width,settings_.height);
+
+    // Initialize canevas
+    canevas_.setSize(sf::Vector2f(settings_.width,settings_.height));
+    canevas_.setFillColor( sf::Color(255,255,255,255) );
   }
 
   bool window::is_open() const
@@ -56,8 +64,22 @@ namespace lea
     return window_.pollEvent(e);
   }
 
-  void window::show()
+  void window::show(drawable& s)
   {
+    // Clear target texture
+    target_.clear( sf::Color(0,255,0,255) );
+
+    // Draw scene
+    s.draw(target_);
+
+    // Retrieve texture
+    target_.display();
+    auto txt = target_.getTexture();
+
+    // Render to main target
+    canevas_.setTexture(&txt);
+    window_.draw(canevas_);
+
     window_.display();
   }
 

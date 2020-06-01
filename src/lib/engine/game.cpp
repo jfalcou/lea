@@ -8,9 +8,12 @@
 **/
 //==================================================================================================
 #include <lea/engine/game.hpp>
+#include <lea/engine/scene.hpp>
 #include <lea/system/directory.hpp>
 #include <lea/3rd_party/sol.hpp>
 #include <SFML/Window/Event.hpp>
+#include <SFML/System/Clock.hpp>
+#include <iostream>
 
 namespace lea
 {
@@ -24,48 +27,52 @@ namespace lea
                   }()
                 )
       , prng_(script_manager_)
-      , time_delta_(1. / display_.settings().frame_rate )
+  {}
+
+  bool game::run(std::string const& id)
   {
+    sf::Clock     clock;
+    sf::Event     event;
+    double        absolute_time_  = 0.;
+    std::uint32_t frame_id        = 0;
+    transition    next            = {};
 
-  }
+    // Checks we can play the requested scene
+    auto n = scenes_.find(id);
+    if(n == scenes_.end()) return false;
+    auto* current_scene = n->second.get();
 
-  void game::update_server(std::uint32_t frame_id)
-  {
-    // Update all server things: AI, game logic, ...
-  }
-
-  void game::update_client(double delta)
-  {
-    // Update all client things: display, music, etc...
-  }
-
-  bool game::run()
-  {
-    sf::Event event;
-    std::uint32_t frame_id = 0;
-
+    // As long as we're running the window
     while(display_.is_open())
     {
-      while(display_.poll(event/*,current_scene_*/))
+      sf::Time time   = clock.restart();
+      double elapsed  = 1e-6 * time.asMicroseconds();
+      absolute_time_ += elapsed;
+
+      // Process event in current scene
+      while(display_.poll(event))
       {
-  //      if(!current_screen_->process(event))
-        {
-          switch(event.type)
-          {
-            case sf::Event::Closed: display_.close(); break;
-            default: break;
-          }
-        }
+        next = current_scene->process(event);
       }
 
-      frame_id++;
+      if( !next )
+      {
+        // If no transition has been triggered by events, process next frame
+        frame_id++;
 
-      update_server(frame_id);
-      update_client(time_delta_);
+        next = current_scene->update_logic(frame_id);
+        current_scene->update_display(absolute_time_);
+        display_.show( *current_scene );
+      }
 
-//      display_.clear();
-//      current_screen_->render(display_);
-      display_.show(/*current_scene_*/);
+      // If transition has been triggered by scene logic, change the scene
+      if( next )
+      {
+        auto n = scenes_.find(*next);
+        if(n == scenes_.end()) return false;
+
+        current_scene = n->second.get();
+      }
     }
 
     return true;

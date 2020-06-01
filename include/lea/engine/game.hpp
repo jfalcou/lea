@@ -10,10 +10,10 @@
 #pragma once
 
 #include <lea/engine/interpreter.hpp>
+#include <lea/engine/scene.hpp>
 #include <lea/system/window.hpp>
-#include <lea/tools/random.hpp>
+#include <lea/system/random.hpp>
 #include <lea/api.hpp>
-#include <SFML/Graphics/RenderWindow.hpp>
 #include <filesystem>
 
 namespace lea
@@ -23,19 +23,23 @@ namespace lea
   struct LEA_API game
   {
     game(const char* configuration_file);
-    bool run();
+    bool run(std::string const& id);
 
-    void update_server(std::uint32_t frame_id);
-    void update_client(double delta);
+    void add_scene(std::string const& id, scene_t&& s)
+    {
+      scenes_[id] = std::move(s);
+    }
 
-    random& prng() { return prng_; }
+    void close() { display_.close(); }
+
+    auto const& settings() const  { return display_.settings(); }
+    random& prng()                { return prng_; }
 
     private:
-    interpreter             script_manager_;
-    std::filesystem::path   configuration_path_;
-    window                  display_;
-    random                  prng_;
-    scene*                  current_scene_;
-    double                  time_delta_;
+    interpreter                             script_manager_;
+    std::filesystem::path                   configuration_path_;
+    window                                  display_;
+    random                                  prng_;
+    std::unordered_map<std::string,scene_t> scenes_;
   };
 }
