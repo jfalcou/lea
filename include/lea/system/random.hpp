@@ -16,16 +16,17 @@
 
 namespace lea
 {
-  struct random
+  struct LEA_API random
   {
-    LEA_API static void   seed(std::uint64_t);
-    LEA_API static bool   flip();
-    LEA_API static int    roll(int, int);
-    LEA_API static float  roll(float, float);
+    void   seed(std::uint64_t);
+    bool   flip();
+    int    roll(int, int);
+    float  sample(float, float);
 
-    LEA_API static void  setup(interpreter&);
+    random(interpreter&);
 
-    static std::mt19937 random_engine_;
-    static sol::table   bindings_;
+    private:
+    std::mt19937 random_engine_;
+    sol::table   bindings_;
   };
 }

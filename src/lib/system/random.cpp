@@ -7,16 +7,13 @@
   SPDX-License-Identifier: MIT
 **/
 //==================================================================================================
-#include <lea/math/random.hpp>
+#include <lea/system/random.hpp>
 #include <cstdlib>
 #include <chrono>
 
 namespace lea
 {
-  std::mt19937 random::random_engine_ = {};
-  sol::table   random::bindings_;
-
-  void  random::setup(interpreter& st)
+  random::random(interpreter& st)
   {
     // Initialize random seed
     int s = st["settings"]["seed"].get<std::uint64_t>();
@@ -25,9 +22,9 @@ namespace lea
 
     // Export LUA bindings for random functions
     bindings_ = st["math"].force();
-    bindings_.set_function( "flip"  , &random::flip );
-    bindings_.set_function( "roll"  , [](int   mn, int   mx) { return  random::roll(mn,mx); } );
-    bindings_.set_function( "sample", [](float mn, float mx) { return  random::roll(mn,mx); } );
+    bindings_.set_function( "flip"  , &random::flip   );
+    bindings_.set_function( "roll"  , &random::roll   );
+    bindings_.set_function( "sample", &random::sample );
   }
 
   void  random::seed(std::uint64_t s)
@@ -46,7 +43,7 @@ namespace lea
     return distribution(random_engine_);
   }
 
-  float random::roll(float mn, float mx)
+  float random::sample(float mn, float mx)
   {
     std::uniform_real_distribution<float> distribution(mn, mx);
     return distribution(random_engine_);

@@ -9,11 +9,8 @@
 //==================================================================================================
 #include <lea/engine/game.hpp>
 #include <lea/system/directory.hpp>
-#include <lea/math/random.hpp>
 #include <lea/3rd_party/sol.hpp>
 #include <SFML/Window/Event.hpp>
-#include <SFML/System/Clock.hpp>
-#include <unistd.h>
 
 namespace lea
 {
@@ -26,10 +23,10 @@ namespace lea
                     return that;
                   }()
                 )
+      , prng_(script_manager_)
       , time_delta_(1. / display_.settings().frame_rate )
   {
-    // Setup the PRNG : seed and register with the interpreter
-    random::setup( script_manager_ );
+
   }
 
   void game::update_server(std::uint32_t frame_id)
