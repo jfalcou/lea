@@ -37,6 +37,14 @@ namespace lea
     return roll(0,1) == 0;
   }
 
+  bool random::check_success(float pct)
+  {
+    if(pct <= 0.f) return false;
+
+    auto r  = sample(0.f,100.f);
+    return r <= pct;
+  }
+
   int   random::roll(int mn, int mx)
   {
     std::uniform_int_distribution<> distribution(mn, mx);

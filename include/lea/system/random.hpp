@@ -18,10 +18,11 @@ namespace lea
 {
   struct LEA_API random
   {
-    void   seed(std::uint64_t);
-    bool   flip();
-    int    roll(int, int);
-    float  sample(float, float);
+    void    seed(std::uint64_t);
+    bool    flip();
+    int     roll(int, int);
+    float   sample(float, float);
+    bool    check_success(float pct);
 
     random(interpreter&);
 
