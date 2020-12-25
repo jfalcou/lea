@@ -70,9 +70,9 @@ int main()
 
   for (auto& e : entities)
   {
-    e = coord.create( gravity{sf::Vector2f(0.0f, -9.81f)}
-                    , rigid_body{ .velocity = sf::Vector2f(0.0f, 0.0f), }
-                    , transform{sf::Vector2f(posg(generator), posg(generator))}
+    e = coord.create( gravity{ sf::Vector2f(0.0f, -9.81f) }
+                    , rigid_body{ sf::Vector2f(0.0f, 0.0f) }
+                    , transform{ sf::Vector2f(posg(generator), posg(generator)) }
                     );
   }
 

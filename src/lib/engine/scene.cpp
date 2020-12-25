@@ -13,15 +13,14 @@
 
 namespace lea
 {
-  scene::scene() : transform_{}, children_{} {}
-
-  transition scene::process(sf::Event& )
+  scene::scene() : transform_{}
   {
-    return {};
+    coordinator_.activate<display>();
+    drawing_system_ = coordinator_.accept<drawing>();
+    coordinator_.set_signature<drawing>(lea::make_signature<display>(coordinator_));
   }
 
-  transition  scene::update_logic(std::uint32_t) { return {};  }
-  void        scene::update_display(double)      {}
+  scene::~scene() {}
 
   void scene::draw(sf::RenderTarget& target, sf::Transform const& transform) const
   {
@@ -30,7 +29,6 @@ namespace lea
     target.clear( sf::Color(0,0,0,255) );
 
     // Let the node draw itself
-    for(auto& child : children_)
-      child->draw(target, combo);
+    drawing_system_->draw(target, combo);
   }
 }

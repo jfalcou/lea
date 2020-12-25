@@ -64,7 +64,7 @@ namespace lea
     return window_.pollEvent(e);
   }
 
-  void window::show(drawable& s)
+  void window::show(scene& s)
   {
     // Clear target texture
     target_.clear( sf::Color(0,255,0,255) );

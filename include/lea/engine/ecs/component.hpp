@@ -31,7 +31,8 @@ namespace lea
   template<typename T>
   struct component_storage : public opaque_storage
   {
-    void insert(entity e, T component)
+    template<typename U>
+    void insert(entity e, U&& component)
     {
       assert(   entity_index_.find(e) == entity_index_.end()
             &&  "Component added to a given entity more than once."
@@ -40,7 +41,7 @@ namespace lea
       std::size_t fresh_index     = size_;
       entity_index_[e]            = fresh_index;
       index_entity_[fresh_index]  = e;
-      components_[fresh_index]    = component;
+      components_[fresh_index]    = std::forward<U>(component);
       ++size_;
     }
 
@@ -51,7 +52,7 @@ namespace lea
       // Copy element at end into deleted element's place to maintain density
       std::size_t removed_index  = entity_index_[e];
       std::size_t last_index     = size_ - 1;
-      components_[removed_index] = components_[last_index];
+      components_[removed_index] = std::move(components_[last_index]);
 
       // Update map to point to moved spot
       entity last_entity            = index_entity_[last_index];
@@ -118,7 +119,7 @@ namespace lea
       return types_map_[type_id];
     }
 
-    template<typename T> void add(entity e, T component)  { get_array<T>()->insert(e, component); }
+    template<typename T> void add(entity e, T&& component)  { get_array<T>()->insert(e, std::forward<T>(component)); }
     template<typename T> void remove(entity e)            { get_array<T>()->remove(e);            }
     template<typename T> T&   component(entity e)         { return get_array<T>()->get(e);        }
 

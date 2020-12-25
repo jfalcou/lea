@@ -17,6 +17,7 @@ namespace lea
   struct LEA_API interpreter
   {
     interpreter();
+    interpreter(char const* filename);
     void run(char const*);
 
     decltype(auto)  operator[](char const* id)  const { return state_[id]; }

@@ -37,10 +37,10 @@ namespace lea
       systems_->on_destroy(e);
     }
 
-    template<typename... Ts> entity create(Ts... component)
+    template<typename... Ts> entity create(Ts&&... component)
     {
       auto e = entities_->create();
-      (components_->add<Ts>(e, component),...);
+      (components_->add<Ts>(e, std::forward<Ts>(component)),...);
 
       auto signature = entities_->get_signature(e);
       (signature.set(components_->type_of<Ts>(), true),...);
@@ -107,8 +107,7 @@ namespace lea
   //================================================================================================
   // Helpers
   //================================================================================================
-  template<typename... Ts>
-  coordinator make_coordinator()
+  template<typename... Ts> coordinator make_coordinator()
   {
     coordinator coord;
     coord.activate<Ts...>();

@@ -19,6 +19,11 @@ namespace lea
                           );
   }
 
+  interpreter::interpreter(char const* filename) : interpreter()
+  {
+    run(filename);
+  }
+
   void interpreter::run(char const* filename)
   {
     state_.script_file( filename );

@@ -18,7 +18,7 @@
 
 namespace lea
 {
-  struct drawable;
+  struct scene;
 
   struct LEA_API window
   {
@@ -26,7 +26,7 @@ namespace lea
 
     bool is_open() const;
     bool poll(sf::Event&);
-    void show(drawable&);
+    void show(scene&);
     void close();
 
     auto const& settings() const { return settings_; }

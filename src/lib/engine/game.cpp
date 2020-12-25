@@ -18,10 +18,9 @@
 namespace lea
 {
   game::game(const char* configuration_file)
-      : configuration_path_(get_config(configuration_file))
+      : script_manager_(get_config(configuration_file).c_str())
       , display_ ( [&]()
                   {
-                    script_manager_.run(configuration_path_.c_str());
                     sol::table that = script_manager_["settings"];
                     return that;
                   }()
@@ -55,23 +54,26 @@ namespace lea
         next = current_scene->process(event);
       }
 
-      if( !next )
+      if( display_.is_open() )
       {
-        // If no transition has been triggered by events, process next frame
-        frame_id++;
+        if( !next )
+        {
+          // If no transition has been triggered by events, process next frame
+          frame_id++;
 
-        next = current_scene->update_logic(frame_id);
-        current_scene->update_display(absolute_time_);
-        display_.show( *current_scene );
-      }
+          next = current_scene->update_logic(frame_id);
+          current_scene->update_display(absolute_time_);
+          display_.show( *current_scene );
+        }
 
-      // If transition has been triggered by scene logic, change the scene
-      if( next )
-      {
-        auto n = scenes_.find(*next);
-        if(n == scenes_.end()) return false;
+        // If transition has been triggered by scene logic, change the scene
+        if( next )
+        {
+          auto n = scenes_.find(*next);
+          if(n == scenes_.end()) return false;
 
-        current_scene = n->second.get();
+          current_scene = n->second.get();
+        }
       }
     }
 

@@ -9,43 +9,41 @@
 //==================================================================================================
 #include <lea/engine/game.hpp>
 #include <lea/engine/scene.hpp>
+#include <lea/engine/ecs.hpp>
 #include <lea/engine/primitive/quad.hpp>
+#include <lea/engine/component/display.hpp>
+
+struct transform  { sf::Vector2f position; };
 
 struct random_box_filler : lea::scene
 {
-  random_box_filler(lea::game& g) : parent_(&g), since_last_time_(0.) {}
-
-  static lea::scene_t make(lea::game& g)
+  random_box_filler(lea::game& g) : parent_(&g), since_last_time_(0.)
   {
-    return std::make_unique<random_box_filler>(g);
+    //coordinator_.activate<transform>();
+    // display_system_ = coord.accept<display>();
+    // coord.set_signature<display>(lea::make_signature<context,transform>(coord_));
   }
+
+  static lea::scene_t make(lea::game& g) { return std::make_unique<random_box_filler>(g); }
 
   lea::transition process(sf::Event& event) override
   {
     switch(event.type)
     {
-      case sf::Event::Closed:
-      {
-        parent_->close(); return {};
-      }
+      case sf::Event::Closed: { parent_->close(); return {}; }
       break;
 
       case sf::Event::KeyPressed:
       {
-        // Pressing [ESC] stops the game
-        if(event.key.code == sf::Keyboard::Escape)
-        {
-          parent_->close();
-          return {};
-        }
-
-        // Pressing [SPACE] clears the blocks
+        if(event.key.code == sf::Keyboard::Escape)  { parent_->close(); return {}; }
         if(event.key.code == sf::Keyboard::Space)
         {
-          scene::children_.clear();
+          for(auto e : entities)
+            coordinator_.destroy(e);
+          entities.clear();
+
           return {};
         }
-
         return {}; break;
       }
 
@@ -56,17 +54,23 @@ struct random_box_filler : lea::scene
   lea::transition update_logic(std::uint32_t frame_id) override
   {
     auto& prng = parent_->prng();
-    auto fps = parent_->settings().frame_rate / 10;
+    auto fps = parent_->settings().frame_rate;
 
     // Every 1/10th of a second, see if we spawn a new block with 66% chance
-    if( (frame_id % fps) == 0 && prng.roll(0,100) <= 66 )
+    if( (frame_id % fps) )
     {
-      auto e = 32 + 32*prng.flip();
-      scene::insert ( lea::quad::make( sf::Vector2f(prng.roll(0,640-64), prng.roll(0,480-64))
-                                     , sf::Vector2f(e,e)
-                                     , sf::Color(0,0,0,0)
-                                     )
-                    );
+      puts("!");
+      auto edge = 32 + 32*prng.flip();
+      entities.push_back( manager().create
+                        ( lea::display( lea::quad::make ( sf::Vector2f( prng.roll(0,640-64)
+                                                                      , prng.roll(0,480-64)
+                                                                      )
+                                                        , sf::Vector2f(edge,edge)
+                                                        , sf::Color(255,0,0,255)
+                                                        )
+                                      )
+                                  )
+                        );
     }
 
     return {};
@@ -74,26 +78,27 @@ struct random_box_filler : lea::scene
 
   void update_display(double current_time) override
   {
-    auto& prng = parent_->prng();
 
-    // Every half second, change color of every blocks
-    if( (current_time - since_last_time_) > 0.5 )
-    {
-      for(auto& q : scene::children_)
-        dynamic_cast<lea::quad*>(q.get())->setFillColor ( sf::Color ( prng.flip()*128+127
-                                                                    , prng.flip()*128+127
-                                                                    , prng.flip()*128+127
-                                                                    , prng.roll(128,255)
-                                                                    )
-                                                        );
-      // Update time
-      since_last_time_ = current_time;
-    }
+    // // Every half second, change color of every blocks
+    // if( (current_time - since_last_time_) > 0.5 )
+    // {
+    //   //display_system_->update(current_time);
+    //   //for(auto& q : entities_ )
+    // //     dynamic_cast<lea::quad*>(q.get())->setFillColor ( sf::Color ( prng.flip()*128+127
+    // //                                                                 , prng.flip()*128+127
+    // //                                                                 , prng.flip()*128+127
+    // //                                                                 , prng.roll(128,255)
+    // //                                                                 )
+    // //                                                     );
+    //   // Update time
+    //   since_last_time_ = current_time;
+    // }
   }
 
   private:
-  lea::game*  parent_;
-  double      since_last_time_;
+  lea::game*                parent_;
+  std::vector<lea::entity>  entities;
+  double                    since_last_time_;
 };
 
 int main()
