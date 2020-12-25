@@ -17,7 +17,7 @@ struct transform  { sf::Vector2f position; };
 
 struct random_box_filler : lea::scene
 {
-  random_box_filler(lea::game& g) : parent_(&g), since_last_time_(0.)
+  random_box_filler(lea::game& g) : scene(&g), since_last_time_(0.)
   {
     //coordinator_.activate<transform>();
     // display_system_ = coord.accept<display>();
@@ -30,12 +30,12 @@ struct random_box_filler : lea::scene
   {
     switch(event.type)
     {
-      case sf::Event::Closed: { parent_->close(); return {}; }
+      case sf::Event::Closed: { terminate(); return {}; }
       break;
 
       case sf::Event::KeyPressed:
       {
-        if(event.key.code == sf::Keyboard::Escape)  { parent_->close(); return {}; }
+        if(event.key.code == sf::Keyboard::Escape)  { terminate(); return {}; }
         if(event.key.code == sf::Keyboard::Space)
         {
           for(auto e : entities)
@@ -53,17 +53,15 @@ struct random_box_filler : lea::scene
 
   lea::transition update_logic(std::uint32_t frame_id) override
   {
-    auto& prng = parent_->prng();
-    auto fps = parent_->settings().frame_rate;
+    auto fps = settings().frame_rate;
 
     // Every 1/10th of a second, see if we spawn a new block with 66% chance
-    if( (frame_id % fps) )
+    if( (frame_id % fps) && prng().check_success(66.f))
     {
-      puts("!");
-      auto edge = 32 + 32*prng.flip();
+      auto edge = 32 + 32*prng().flip();
       entities.push_back( manager().create
-                        ( lea::display( lea::quad::make ( sf::Vector2f( prng.roll(0,640-64)
-                                                                      , prng.roll(0,480-64)
+                        ( lea::display( lea::quad::make ( sf::Vector2f( prng().roll(0,640-64)
+                                                                      , prng().roll(0,480-64)
                                                                       )
                                                         , sf::Vector2f(edge,edge)
                                                         , sf::Color(255,0,0,255)
@@ -78,7 +76,6 @@ struct random_box_filler : lea::scene
 
   void update_display(double current_time) override
   {
-
     // // Every half second, change color of every blocks
     // if( (current_time - since_last_time_) > 0.5 )
     // {
@@ -96,7 +93,6 @@ struct random_box_filler : lea::scene
   }
 
   private:
-  lea::game*                parent_;
   std::vector<lea::entity>  entities;
   double                    since_last_time_;
 };

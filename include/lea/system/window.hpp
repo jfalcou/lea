@@ -20,6 +20,13 @@ namespace lea
 {
   struct scene;
 
+  struct setup
+  {
+    int width, height;
+    int frame_rate;
+    bool fullscreen;
+  };
+
   struct LEA_API window
   {
     window(sol::table const& config);
@@ -29,18 +36,13 @@ namespace lea
     void show(scene&);
     void close();
 
-    auto const& settings() const { return settings_; }
+    setup const& settings() const { return settings_; }
 
     private:
     sf::RenderWindow    window_;
     sf::RenderTexture   target_;
     sf::RectangleShape  canevas_;
+    setup               settings_;
 
-    struct
-    {
-      int width, height;
-      int frame_rate;
-      bool fullscreen;
-    } settings_;
   };
 }

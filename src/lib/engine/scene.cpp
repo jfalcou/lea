@@ -8,19 +8,26 @@
 **/
 //==================================================================================================
 #include <lea/engine/scene.hpp>
+#include <lea/engine/game.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Window/Event.hpp>
 
 namespace lea
 {
-  scene::scene() : transform_{}
+  scene::scene(game* p) : transform_{}, parent_(p)
   {
-    coordinator_.activate<display>();
+    coordinator_.activate<lea::display>();
     drawing_system_ = coordinator_.accept<drawing>();
-    coordinator_.set_signature<drawing>(lea::make_signature<display>(coordinator_));
+    coordinator_.set_signature<drawing>(lea::make_signature<lea::display>(coordinator_));
   }
 
   scene::~scene() {}
+
+  interpreter&    scene::scripts()        { return parent_->scripts;    }
+  window&         scene::display()        { return parent_->display;    }
+  random&         scene::prng()           { return parent_->prng ;      }
+  setup    const& scene::settings() const { return parent_->settings(); }
+  void            scene::terminate()      { parent_->close();           }
 
   void scene::draw(sf::RenderTarget& target, sf::Transform const& transform) const
   {

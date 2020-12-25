@@ -28,24 +28,34 @@ namespace lea
 
   struct game;
   struct drawing;
+  struct interpreter;
+  struct window;
+  struct setup;
+  struct random;
 
   struct LEA_API scene
   {
-    scene();
+    scene(game*);
     virtual ~scene();
 
     void draw(sf::RenderTarget& target, sf::Transform const& transform = {}) const;
-    coordinator& manager() { return coordinator_; }
 
     virtual transition  process(sf::Event&)         { return {};  }
     virtual transition  update_logic(std::uint32_t) { return {};  }
     virtual void        update_display(double)      {}
 
+    coordinator&    manager()   { return coordinator_; }
+    interpreter&    scripts();
+    window&         display();
+    random&         prng();
+    void            terminate();
+    setup    const& settings() const;
+
     protected:
-    coordinator               coordinator_;
-    sf::Transform             transform_;
-    drawing*                  drawing_system_;
-    game*                     parent_;
+    coordinator   coordinator_;
+    sf::Transform transform_;
+    drawing*      drawing_system_;
+    game*         parent_;
   };
 
   using scene_t = std::unique_ptr<scene>;
