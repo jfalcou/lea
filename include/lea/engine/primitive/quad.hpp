@@ -28,9 +28,12 @@ namespace lea
       return std::make_unique<quad>(args...);
     }
 
-  using RectangleShape::setFillColor;
-  using RectangleShape::setOutlineColor;
-  using RectangleShape::setOutlineThickness;
+    using RectangleShape::setFillColor;
+    using RectangleShape::setOutlineColor;
+    using RectangleShape::setOutlineThickness;
+    using RectangleShape::setPosition;
+    using RectangleShape::setSize;
+    using RectangleShape::move;
 
     void draw(sf::RenderTarget& target, sf::Transform const& transform) const override;
   };
