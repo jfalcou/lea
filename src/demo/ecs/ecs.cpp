@@ -18,13 +18,13 @@ struct transform  { sf::Vector2f position;  };
 
 struct physics : lea::system
 {
-  physics( lea::coordinator* cc ) : coord_(cc) {}
+  physics( lea::coordinator* cc ) : lea::system(cc) {}
 
   void update(float dt)
   {
     for (auto const& e : entities)
     {
-      auto [t,r,g] = coord_->component<transform,rigid_body,gravity>(e);
+      auto [t,r,g] = manager->component<transform,rigid_body,gravity>(e);
 
       t.position.x += r.velocity.x * dt;
       t.position.y += r.velocity.y * dt;
@@ -32,26 +32,22 @@ struct physics : lea::system
       r.velocity.y += g.force.y * dt;
     }
   }
-
-  lea::coordinator*  coord_;
 };
 
 struct display : lea::system
 {
-  display( lea::coordinator* cc ) : coord_(cc) {}
+  display( lea::coordinator* cc ) : lea::system(cc) {}
 
   void update(float dt)
   {
     for (auto const& e : entities)
     {
-      auto [t,r] = coord_->component<transform,rigid_body>(e);
+      auto [t,r] = manager->component<transform,rigid_body>(e);
       std::cout << "[" << &e << "] @ {"
                 << t.position.x << ", " << t.position.y << "} @("
                 << r.velocity.x << ", " << r.velocity.y << ")\n";
     }
   }
-
-  lea::coordinator*  coord_;
 };
 
 int main()

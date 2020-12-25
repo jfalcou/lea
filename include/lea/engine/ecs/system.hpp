@@ -23,9 +23,13 @@ namespace lea
   //================================================================================================
   // Basic layout for system class
   //================================================================================================
+  struct coordinator;
+
   struct system
   {
-    std::set<entity> entities;
+    system(coordinator* cc) : manager(cc) {}
+    std::set<entity>  entities;
+    coordinator*      manager;
   };
 
   //================================================================================================
