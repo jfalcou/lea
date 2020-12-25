@@ -11,7 +11,6 @@
 
 #include <lea/api.hpp>
 #include <lea/engine/ecs.hpp>
-#include <lea/engine/component/display.hpp>
 #include <SFML/Graphics/Transform.hpp>
 #include <optional>
 #include <memory>
@@ -54,8 +53,9 @@ namespace lea
     protected:
     coordinator   coordinator_;
     sf::Transform transform_;
-    drawing*      drawing_system_;
     game*         parent_;
+
+    virtual void do_draw(sf::RenderTarget& target, sf::Transform const& transform) const =0;
   };
 
   using scene_t = std::unique_ptr<scene>;
